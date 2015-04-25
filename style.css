@@ -48,3 +48,62 @@ ul {
 ul li {
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
+.python .item-wrapper {
+  border-left-color: #66DAC3;
+}
+.sql .item-wrapper {
+  border-left-color: #77A6F6;
+}
+.javascript .item-wrapper {
+  border-left-color: #F3DA73;
+}
+.json .item-wrapper {
+  border-left-color: #FC7778;
+}
+.item-wrapper {
+  border-left: 10px solid #fff;
+  padding: 20px 15px;
+  overflow: auto;
+}
+.item-wrapper p {
+  margin: 10px 0 0;
+  text-align: left;
+}
+.btn {
+  border: none;
+  border-radius: 2px;
+  height: 36px;
+  line-height: 36px;
+  outline: 0;
+  padding: 0 20px;
+  text-transform: uppercase;
+  color: #FFF;
+  background-color: #26a69a;
+  text-align: center;
+  cursor: pointer;
+  will-change: opacity, transform;
+  transition: all .3s ease-out;
+  width: auto;
+}
+.btn:hover {
+  background-color: #2bbbad;
+  -webkit-box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
+  -moz-box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
+  box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
+}
+.btn--remove-favorite {
+  background-color: #A62630;
+}
+.btn--remove-favorite:hover {
+  background-color: #D23A51
+}
+.item .btn {
+  margin-top: 20px;
+}
+.search-options {
+  margin: 20px 0;
+  text-align: right;
+}
+.btn--search, .pages {
+  margin-left: 20px;
+}
