@@ -4,11 +4,44 @@
   <meta charset="utf-8">
   <title>Assignment 3 - Part 2</title>
   <link rel="stylesheet" href="./style.css">
-  <script src="src/gist.js"></script>
   <script src="src/language.js"></script>
   <script src="src/favorites.js"></script>
 </head>
 <body>
-    <div>Gist get this over with</div>
-</body>
+  <header>
+    <h1>Gist manager</h1>
+  </header>
+    <div class="search-options">
+      <input type='checkbox' name='python' id='python'>
+      <label for='python'>Python</label>
+      <input type='checkbox' name='json' id='json'>
+      <label for='json'>JSON</label>
+      <input type='checkbox' name='javascript' id='javascript'>
+      <label for='javascript'>JavaScript</label>
+      <input type='checkbox' name='sql' id='sql'>
+      <label for='sql'>SQL</label>
+      <label for='pages' class="pages">Result pages:</label>
+      <select id='pages'>
+          <option value=1>1</option>
+          <option value=2>2</option>
+          <option value=3>3</option>
+          <option value=4>4</option>
+          <option value=5>5</option>
+      </select>
+      <input type='submit' id='search' class="btn btn--search" value='Search' onclick="">
+    </div>
+    <div class="container">
+      <div class="container favorites">
+        <h2>My Favorites</h2>
+        <ul id="favorites">
+        </ul>
+      </div>
+      <div class="container results">
+        <h2>Search results</h2>
+        <ul id="results">
+        </ul>
+      </div>
+    </div>
+    <script src="src/gist.js"></script>
+  </body>
 </html>
