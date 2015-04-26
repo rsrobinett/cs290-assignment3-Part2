@@ -107,3 +107,6 @@ ul li {
 .btn--search, .pages {
   margin-left: 20px;
 }
+p .gistid {
+  visibility: hidden;
+}

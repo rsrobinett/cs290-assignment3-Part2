@@ -1,8 +1,12 @@
+window.onload = function() {
+    makeGistRequest(1);
+};
+
 var ResultArray = [];
 
-function makeGistRequest() {
+function makeGistRequest(numPages) {
     var httpRequest = new XMLHttpRequest();
-    var gistUrl = 'https://api.github.com/gists/public'
+    var gistUrl = 'https://api.github.com/gists/public?page=' + numPages;
 
     if(!httpRequest){
         alert('Cannot create an XMLHttpRequest instance');
@@ -11,12 +15,10 @@ function makeGistRequest() {
     httpRequest.onreadystatechange = function() {
         if (httpRequest.readyState === 4) {
            if(httpRequest.status == 200){
-              clearResults();
-              var numPages = GetPages();
-              for(var i = 0; i < numPages; i++){
-                parseResponse(httpRequest.responseText);
-                displayItems(ResultArray, 'results')
-              }
+              parseResponse(httpRequest.responseText);
+              displayItems(ResultArray, 'results')
+              if(numPages > 1)
+                makeGistRequest(numPages - 1);
             }
            else if(httpRequest.status == 400) {
               alert('There was an error 400')
@@ -29,6 +31,12 @@ function makeGistRequest() {
 
     httpRequest.open("GET", gistUrl, true);
     httpRequest.send(null);
+}
+
+function on_search_button_click(){
+  clearResults();
+  var numPages = GetPages();
+  makeGistRequest(numPages);
 }
 
 function GetPages(){
@@ -78,7 +86,21 @@ function displayItems(array, location){
      var btnInput = document.createElement('input');
      btnInput.classList.add("btn");
      btnInput.classList.add("btn--add-favorite");
-     btnInput.value = "Add to favorites";
+     btnInput.id = ResultArray[i].id;
+     if(location == 'results') {
+       btnInput.value = "Add to favorites";
+       btnInput.classList.add("btn--add-favorite");
+       btnInput.onclick = AddToFavorites;
+      } else if (location == 'favorites') {
+       btnInput.value = "Remove from favorites";
+       btnInput.classList.add("btn--remove-favorite");
+       btnInput.onclick = RemoveFromFavorites;
+      } else {
+       btnInput.value = 'unknown';
+     };
+
+     //var alertValue = " you favorited " + ResultArray[i].id;
+     //btnInput.onclick = function(){ alert(alertValue);};// + ResultArray[i].GetDescription() + "with ID = " + ResultArray[i].id);};
      languageP.appendChild(languageTextNode);
      itemDiv.appendChild(languageP);
      itemDiv.appendChild(btnInput);
@@ -87,9 +109,28 @@ function displayItems(array, location){
    }
 }
 
+function AddToFavorites(){
+    var idfav = this.id;
+    var gistfav = ResultArray.filter(function(arr){
+      return arr.id == idfav;
+    });
+    localStorage.setItem(idfav, gistfav[0].GetDescription());
+  }
+
 function GistItem(id, description, language, url){
   this.id = id;
   this.description = description;
+  this.url = url;
+  this.isFavorite = false;
+
+  this.addToFavorites = function(){
+    localStorage.setItem(id, description);
+    this.isFavorite = true;
+  }
+  this.removeFromFavorites = function(){
+    this.isFavorite = false;
+  }
+
   this.GetDescription = function() {
     if(this.description === null || this.description == undefined)
       return '';
@@ -128,5 +169,5 @@ function GistItem(id, description, language, url){
     }*/
   //}
 
-  this.url = url;
+
 }
