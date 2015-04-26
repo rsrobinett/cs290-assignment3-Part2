@@ -1,8 +1,18 @@
 window.onload = function() {
-    makeGistRequest(1);
+  getStoredFavorites();
+  makeGistRequest(1);
 };
 
 var ResultArray = [];
+var FavoritesArray = [];
+
+function getStoredFavorites() {
+  for(var i = 0; i < localStorage.length; i++){
+    var jsonFav = JSON.parse(localStorage.getItem(localStorage.key(i)));
+    var fav = new GistItem(jsonFav.id, jsonFav.description, jsonFav.language, jsonFav.url);
+    FavoritesArray.push(fav);
+  }
+}
 
 function makeGistRequest(numPages) {
     var httpRequest = new XMLHttpRequest();
@@ -16,7 +26,8 @@ function makeGistRequest(numPages) {
         if (httpRequest.readyState === 4) {
            if(httpRequest.status == 200){
               parseResponse(httpRequest.responseText);
-              displayItems(ResultArray, 'results')
+              displayItems(ResultArray, 'results');
+              displayItems(FavoritesArray, 'favorites');
               if(numPages > 1)
                 makeGistRequest(numPages - 1);
             }
@@ -72,35 +83,32 @@ function parseResponse(jsonResponse){
 function displayItems(array, location){
    var gistul = document.getElementById(location);
 
-   for(var i = 0; i < ResultArray.length; i++){
+   for(var i = 0; i < array.length; i++){
      var gistli = document.createElement("li");
      gistli.classList.add("item");
-     if(ResultArray[i].GetLanguage() != null){
-       gistli.classList.add(ResultArray[i].GetLanguage());
+     if(array[i].GetLanguage() != null){
+       gistli.classList.add(array[i].GetLanguageClass());
      }
      var itemDiv = document.createElement("div");
      itemDiv.classList.add("item-wrapper");
-     itemDiv.innerHTML = '<a href="' + ResultArray[i].url + '">' + ResultArray[i].GetDescription() + '</a>';
+     itemDiv.innerHTML = '<a href="' + array[i].url + '">' + array[i].GetDescription() + '</a>';
      var languageP = document.createElement('p');
-     var languageTextNode = document.createTextNode(ResultArray[i].GetLanguage());
+     var languageTextNode = document.createTextNode(array[i].GetLanguage());
      var btnInput = document.createElement('input');
      btnInput.classList.add("btn");
      btnInput.classList.add("btn--add-favorite");
-     btnInput.id = ResultArray[i].id;
+     btnInput.id = array[i].id;
      if(location == 'results') {
        btnInput.value = "Add to favorites";
        btnInput.classList.add("btn--add-favorite");
        btnInput.onclick = AddToFavorites;
       } else if (location == 'favorites') {
-       btnInput.value = "Remove from favorites";
+       btnInput.value = "Remove";
        btnInput.classList.add("btn--remove-favorite");
        btnInput.onclick = RemoveFromFavorites;
       } else {
        btnInput.value = 'unknown';
      };
-
-     //var alertValue = " you favorited " + ResultArray[i].id;
-     //btnInput.onclick = function(){ alert(alertValue);};// + ResultArray[i].GetDescription() + "with ID = " + ResultArray[i].id);};
      languageP.appendChild(languageTextNode);
      itemDiv.appendChild(languageP);
      itemDiv.appendChild(btnInput);
@@ -114,22 +122,32 @@ function AddToFavorites(){
     var gistfav = ResultArray.filter(function(arr){
       return arr.id == idfav;
     });
-    localStorage.setItem(idfav, gistfav[0].GetDescription());
+    var jsonFavorite = JSON.stringify({id: idfav, description: gistfav[0].GetDescription(), language:gistfav[0].GetLanguage(), url: gistfav[0].url });
+    localStorage.setItem(idfav, jsonFavorite);
   }
 
+function RemoveFromFavorites(){
+  var idfav = this.id;
+  localStorage.removeItem(idfav);
+}
+
 function GistItem(id, description, language, url){
+
   this.id = id;
   this.description = description;
+  this.language = language;
   this.url = url;
+
   this.isFavorite = false;
 
   this.addToFavorites = function(){
     localStorage.setItem(id, description);
     this.isFavorite = true;
-  }
+  };
+
   this.removeFromFavorites = function(){
     this.isFavorite = false;
-  }
+  };
 
   this.GetDescription = function() {
     if(this.description === null || this.description == undefined)
@@ -137,13 +155,29 @@ function GistItem(id, description, language, url){
     else
         return this.description;
         };
-  this.language = language;
+
   this.GetLanguage = function(){
-    if(this.language === null || this.description == undefined)
+    if(this.language === null || this.language == undefined)
       return;
     else
-    return this.language.toLowerCase();
-    };
+      return this.language;
+  };
+
+  this.GetLanguageClass = function(){
+    if(this.language === null || this.language == undefined)
+      return;
+    else
+    switch(this.language.toLowerCase()){
+      case 'javascript':
+      case 'json':
+      case 'python':
+      case 'sql':
+        return this.language.toLowerCase();
+      default:
+        return 'other';
+    }
+  };
+}
   /*this.language = function(languageStr){
     var javascript = false;
     this.json = false;
@@ -168,6 +202,3 @@ function GistItem(id, description, language, url){
         this.other = true;
     }*/
   //}
-
-
-}
