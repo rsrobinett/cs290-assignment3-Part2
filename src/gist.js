@@ -59,17 +59,8 @@ function ClearResults(){
     ResultArray.length = 0;
     var resultList = document.getElementById('results');
     resultList.innerHTML = '';
-    /*
-    for(var i = 0; i < resultList.length; i++){
-      if(resultList[i].id){
-        RemoveFromView(resultList[i].id);
-      }
-      //resultList.removeChild(resultList.firstChild);
-    };
-    */
   };
 }
-
 
 function parseResponse(jsonResponse){
    var parsedJSON = JSON.parse(jsonResponse);
@@ -92,16 +83,38 @@ function parseResponse(jsonResponse){
        })){
          ResultArray[i + resultArrayLength].isFavorite = true;
        }
-
    }
 }
 
 function displayItems(array, location){
-   var gistul = document.getElementById(location);
 
-   for(var i = 0; i < array.length; i++){
-     if(location == 'favorites' || !localStorage.getItem(array[i].id)){
-       displayItem(gistul, array[i], location);
+  var gistArray = [];
+
+  if(location === 'results' && (python.checked || javascript.checked || json.checked || sql.checked)){
+    gistArray = array.filter(function(arr){
+      if(arr.language === null){
+        return false;
+      } else if(json.checked && arr.language.toLowerCase() === 'json'){
+          return true;
+      } else if(javascript.checked && arr.language.toLowerCase() === 'javascript'){
+          return true;
+      } else if(python.checked && arr.language.toLowerCase() === 'python'){
+        return true;
+      } else if(sql.checked && arr.language.toLowerCase() === 'sql'){
+        return true;
+      } else {
+        return false;
+      }
+    });
+  } else {
+    gistArray = array;
+  }
+
+  var gistlist = document.getElementById(location);
+
+   for(var i = 0; i < gistArray.length; i++){
+     if(location == 'favorites' || !localStorage.getItem(gistArray[i].id)){
+       displayItem(gistlist, gistArray[i], location);
      }
    }
 }
@@ -153,21 +166,6 @@ function AddToFavorites(){
 
     var favoriteGistList = document.getElementById('favorites');
     displayItem( favoriteGistList ,gistfav[0], 'favorites');
-
-
-  /*
-    var gistToRemove = document.getElementById(idfav);
-    var gistResultParent = document.getElementById('results');
-
-    if(gistResultParent){
-      gistResultParent.removeChild(gistToRemove);
-      if(document.getElementById('favorites') && !document.getElementById(idfav)){
-        var favoriteGistList = document.getElementById('favorites');
-        displayItem( favoriteGistList ,gistfav[0], 'favorites')
-      }
-    }
-*/
-
   }
 
 function RemoveFromView(elementid){
